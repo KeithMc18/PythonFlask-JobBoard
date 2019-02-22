@@ -1,6 +1,28 @@
-from flask import Flask, render_template
+import sqlite3
+from flask import Flask, render_template, g
+
+PATH = 'db/jobs.sqlite'
 
 app = Flask(__name__)
+
+def open_connection():
+    connection = getattr(g, '_connection', None)
+    if connection == None:
+        connection = g._connection = sqlite3.connect(PATH)
+    connection.row_factory = sqlite3.Row
+    return _connection
+
+def execute_sql(sql, value=(), commit=False, single=False):
+    connection = open_connection()
+    cursor = _connection.execute(sql, values)
+    if commit == True:
+        results = connection.commit()
+    else:
+        results = cursor.fetchone() if single else cursoe.fetchall()
+
+    cursor.close()
+    return results
+
 
 @app.route('/')
 @app.route('/jobs')
