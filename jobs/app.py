@@ -10,18 +10,24 @@ def open_connection():
     if connection == None:
         connection = g._connection = sqlite3.connect(PATH)
     connection.row_factory = sqlite3.Row
-    return _connection
+    return connection
 
-def execute_sql(sql, value=(), commit=False, single=False):
+def execute_sql(sql, values=(), commit=False, single=False):
     connection = open_connection()
-    cursor = _connection.execute(sql, values)
+    cursor = connection.execute(sql, values)
     if commit == True:
         results = connection.commit()
     else:
-        results = cursor.fetchone() if single else cursoe.fetchall()
+        results = cursor.fetchone() if single else cursor.fetchall()
 
     cursor.close()
     return results
+
+@app.teardown_appcontext
+def close_connection(exception):
+    connection = getattr(g, '_connection', None)
+    if connection is not None:
+        connection.close()
 
 
 @app.route('/')
