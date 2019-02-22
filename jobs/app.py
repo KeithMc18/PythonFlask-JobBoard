@@ -6,4 +6,4 @@ app = Flask(__name__)
 @app.route('/jobs')
 
 def jobs():
-    return render_tmplates('index.html')
+    return render_template('index.html')
